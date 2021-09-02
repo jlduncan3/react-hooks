@@ -3,14 +3,19 @@
 
 import * as React from 'react'
 
-function Greeting({initialName = ''}) {
-  
-  const [name, setName] = React.useState(()=> {return window.localStorage.getItem('name') || initialName;});
+function useLocalStorageState(key,defaultValue = '') {
+ const [storageValue, setStorageValue] = React.useState(()=>  window.localStorage.getItem(key) || defaultValue);
 
   React.useEffect(() => {
-    window.localStorage.setItem('name',name);
-  }, [name])
-  
+    console.log('useLocalStorageState - useEffect')
+    window.localStorage.setItem(key, storageValue);
+  }, [key,storageValue])
+  return [storageValue,setStorageValue]
+}
+function Greeting({initialName = ''}) {
+
+  console.log("Greeting - render");
+  const [name, setName] = useLocalStorageState();
   function handleChange(event) {
     setName(event.target.value)
   }
@@ -26,7 +31,11 @@ function Greeting({initialName = ''}) {
 }
 
 function App() {
-  return <Greeting />
+  const [count,setCount] = React.useState(0);
+  return <>
+  <button onClick={() => setCount(pc => pc+1)}>{count}</button>
+    <Greeting/>
+  </>
 }
 
 export default App
